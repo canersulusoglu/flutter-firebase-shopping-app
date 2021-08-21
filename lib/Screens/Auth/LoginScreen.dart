@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import '../../Utils/validator_extensions.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -78,7 +79,7 @@ class _LoginFormState extends State<LoginForm> {
               password: passwordInputController.text)
           .then((signedUser) => {
                 Navigator.pushNamedAndRemoveUntil(
-                    context, "/main", (route) => false)
+                    context, "/app", (route) => false)
               });
       } on FirebaseAuthException catch (err) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${err.message}")));
@@ -111,10 +112,14 @@ class _LoginFormState extends State<LoginForm> {
           child: TextFormField(
             autofocus: false,
             controller: emailInputController,
+            keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(labelText: "Email", prefixIcon: Icon(Icons.email),),
-            validator: (String? value) {
-              if(value!.isEmpty) {
-                return "This area can not be empty";
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            validator: (String? value){
+              if(value!.isEmpty){
+                return "This area can not be empty.";
+              }else if(!value.isEmail()){
+                return "This is not an e-mail.";
               }
               return null;
             },
@@ -137,7 +142,15 @@ class _LoginFormState extends State<LoginForm> {
                           ? Icons.visibility
                           : Icons.visibility_off,
                     ),
-                  ))),
+                  )),
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (String? value){
+                if(value!.isEmpty){
+                  return "This area can not be empty.";
+                }
+                return null;
+              }
+            ),
         )),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
