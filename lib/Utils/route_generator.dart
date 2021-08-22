@@ -7,6 +7,8 @@ import '../Screens/AppHomeScreen.dart' show AppHomeScreen;
 import '../Screens/AppCategoriesScreen.dart' show AppCategoriesScreen;
 import '../Screens/AppShoppingCartScreen.dart' show AppShoppingCartScreen;
 import '../Screens/AppOrdersScreen.dart' show AppOrdersScreen;
+//Components
+import '../Components/SettingsModalBottomSheet.dart' show showSettingsModalBottomSheet;
 
 const routeAuthLoginPage = '/login';
 const routeAuthRegisterPage = '/register';
@@ -56,6 +58,15 @@ class _AppMainRoutesState extends State<AppMainRoutes> {
                   const Image(image: AssetImage("assets/images/app_logo.png"),width: 200),
                   Row(
                     children: [
+                      Tooltip(
+                        message: "Settings",
+                        child: IconButton(
+                          icon: const Icon(Icons.settings),
+                          onPressed: (){
+                            showSettingsModalBottomSheet(context);
+                          }
+                        ),
+                      ),
                       Tooltip(
                         message: "Account",
                         child: IconButton(
@@ -111,21 +122,6 @@ class _AppMainRoutesState extends State<AppMainRoutes> {
           ),
         ),
       ),
-      /*
-      appBar: AppBar(
-        title: const Text("Shopping"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: logOut
-          ),
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: logOut,
-          )
-        ],
-      ),
-      */
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: bottomNavigationBarSelectedIndex,
@@ -153,6 +149,7 @@ class _AppMainRoutesState extends State<AppMainRoutes> {
     );
   }
 }
+
 
 MaterialPageRoute<dynamic> onGenerateRoutes (RouteSettings settings){
   late Widget page;

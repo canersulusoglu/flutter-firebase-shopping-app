@@ -301,12 +301,12 @@ class _RegisterFormState extends State<RegisterForm> {
             children: [
               RichText(
                   text: TextSpan(children: [
-                const TextSpan(
+                TextSpan(
                     text: "Already have account? ",
-                    style: TextStyle(color: Colors.black, fontSize: 14)),
+                    style: DefaultTextStyle.of(context).style),
                 TextSpan(
                     text: "Login!",
-                    style: const TextStyle(color: Colors.blue, fontSize: 16),
+                    style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
                         Navigator.of(context).pop();

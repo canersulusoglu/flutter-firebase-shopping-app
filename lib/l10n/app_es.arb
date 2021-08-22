@@ -1,0 +1,14 @@
+{
+    "@@locale": "es",
+    "helloWorld": "¡Hola Mundo!",
+    "language": "{languageCode, select, en{Inglés} tr{Turco} es{Español}}",
+    "@language": {
+        "description": "Language name",
+        "placeholders": {
+            "languageCode": {
+                "type": "String",
+                "example": "en"
+            }
+        }
+    }
+}

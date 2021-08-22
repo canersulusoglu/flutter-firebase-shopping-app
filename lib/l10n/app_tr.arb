@@ -1,0 +1,14 @@
+{
+  "@@locale": "tr",
+  "helloWorld": "Merhaba Dünya!",
+  "language": "{languageCode, select, en{İngilizce} tr{Türkçe} es{İspanyolca}}",
+  "@language": {
+    "description": "Language name",
+    "placeholders": {
+      "languageCode": {
+        "type": "String",
+        "example": "en"
+      }
+    }
+  }
+}

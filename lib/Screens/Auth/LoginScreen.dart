@@ -157,12 +157,12 @@ class _LoginFormState extends State<LoginForm> {
           children: [
             RichText(
                 text: TextSpan(children: [
-              const TextSpan(
+                TextSpan(
                   text: "Don't have an account yet? ",
-                  style: TextStyle(color: Colors.black, fontSize: 14)),
+                  style: DefaultTextStyle.of(context).style),
               TextSpan(
                   text: "Register!",
-                  style: const TextStyle(color: Colors.blue, fontSize: 16),
+                  style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
                       Navigator.pushNamed(context, "/register");
