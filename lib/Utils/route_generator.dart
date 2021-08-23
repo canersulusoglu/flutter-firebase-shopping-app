@@ -7,12 +7,14 @@ import '../Screens/AppHomeScreen.dart' show AppHomeScreen;
 import '../Screens/AppCategoriesScreen.dart' show AppCategoriesScreen;
 import '../Screens/AppShoppingCartScreen.dart' show AppShoppingCartScreen;
 import '../Screens/AppOrdersScreen.dart' show AppOrdersScreen;
+import '../Screens/AppAccountScreen.dart' show AppAccountScreen;
 //Components
 import '../Components/SettingsModalBottomSheet.dart' show showSettingsModalBottomSheet;
 
 const routeAuthLoginPage = '/login';
 const routeAuthRegisterPage = '/register';
 const routeAppHomePage = "/app";
+const routeAppAccountPage = "/account";
 
 class AppMainRoutes extends StatefulWidget {
   const AppMainRoutes({ Key? key }) : super(key: key);
@@ -71,7 +73,9 @@ class _AppMainRoutesState extends State<AppMainRoutes> {
                         message: "Account",
                         child: IconButton(
                           icon: const Icon(Icons.account_circle),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(context, "/account");
+                          },
                         ),
                       ),
                       Tooltip(
@@ -163,6 +167,9 @@ MaterialPageRoute<dynamic> onGenerateRoutes (RouteSettings settings){
   }
   else if(routeName == routeAppHomePage){
     page = const AppMainRoutes();
+  }
+  else if(routeName == routeAppAccountPage){
+    page = const AppAccountScreen();
   }
   else{
     page = const LoginScreen();

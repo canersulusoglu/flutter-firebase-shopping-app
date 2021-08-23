@@ -121,7 +121,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     "name": nameInputController.text,
                     "surname": surnameInputController.text,
                     "email": emailInputController.text,
-                    "password": passwordInputController.text
+                    "phoneNumber": phoneNumberInputController.text
                   }),
                   showMyDialog("Success", 'Registered successfully!')
                 });

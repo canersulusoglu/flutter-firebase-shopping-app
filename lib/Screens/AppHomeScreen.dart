@@ -15,6 +15,7 @@ class AppHomeScreen extends StatelessWidget {
         children: [
           const Text("Home Screen"),
           Text(AppLocalizations.of(context)!.helloWorld),
+          Text("${FirebaseAuth.instance.currentUser!.email}")
         ],
       )),
     );
