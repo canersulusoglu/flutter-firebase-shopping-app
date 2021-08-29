@@ -1,8 +1,11 @@
 // ignore_for_file: file_names
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import '../../Utils/validator_extensions.dart';
+import '../../Services/auth_service.dart';
+import '../../Components/AppSettingsModalBottomSheet.dart' show showAppSettingsModalBottomSheet;
+import '../../Components/SnackBars.dart' show showErrorMessageSnackBar, showSuccessMessageSnackBar;
+import '../../Utils/ReturnData.dart';
+import '../../Utils/FormValidator.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -11,7 +14,21 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Login"),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text("Login"),
+            Tooltip(
+              message: "App Settings",
+              child: IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: (){
+                  showAppSettingsModalBottomSheet(context);
+                }
+              ),
+            ),
+          ],
+        ),
       ),
       body: const Body(),
     );
@@ -72,17 +89,12 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<void> onFormSubmit() async {
     if(loginFormKey.currentState!.validate()){
-      try {
-        await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-              email: emailInputController.text,
-              password: passwordInputController.text)
-          .then((signedUser) => {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, "/app", (route) => false)
-              });
-      } on FirebaseAuthException catch (err) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${err.message}")));
+      ReturnData result = await AuthService.instance.loginWithEmailAndPassword(emailInputController.text, passwordInputController.text);
+      if(result.isSuccessful){
+        Navigator.pushNamedAndRemoveUntil(context, "app", (route) => false);
+        showSuccessMessageSnackBar(context, result.getMessage(context));
+      }else{
+        showErrorMessageSnackBar(context, result.getMessage(context));
       }
     }
   }
@@ -116,12 +128,10 @@ class _LoginFormState extends State<LoginForm> {
             decoration: const InputDecoration(labelText: "Email", prefixIcon: Icon(Icons.email),),
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (String? value){
-              if(value!.isEmpty){
-                return "This area can not be empty.";
-              }else if(!value.isEmail()){
-                return "This is not an e-mail.";
-              }
-              return null;
+              return FormValidator.validate(
+                required: true,
+                isEmail: true
+              ).getMessage(context, value!);
             },
           ),
         )),
@@ -145,10 +155,9 @@ class _LoginFormState extends State<LoginForm> {
                   )),
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (String? value){
-                if(value!.isEmpty){
-                  return "This area can not be empty.";
-                }
-                return null;
+                return FormValidator.validate(
+                  required: true,
+                ).getMessage(context, value!);
               }
             ),
         )),
@@ -165,7 +174,7 @@ class _LoginFormState extends State<LoginForm> {
                   style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      Navigator.pushNamed(context, "/register");
+                      Navigator.pushNamed(context, "register");
                     }),
             ])),
             ElevatedButton(onPressed: onFormSubmit, child: const Text("Login"))

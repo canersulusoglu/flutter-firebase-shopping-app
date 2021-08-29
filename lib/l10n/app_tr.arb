@@ -1,14 +1,44 @@
 {
-  "@@locale": "tr",
-  "helloWorld": "Merhaba Dünya!",
-  "language": "{languageCode, select, en{İngilizce} tr{Türkçe} es{İspanyolca}}",
-  "@language": {
-    "description": "Language name",
-    "placeholders": {
-      "languageCode": {
-        "type": "String",
-        "example": "en"
-      }
-    }
-  }
+    "@@locale": "tr",
+    "helloWorld": "Hello World!",
+    "language": "{languageCode, select, en{İngilizce} tr{Türkçe} es{İspanyolca}}",
+    "@language": {
+        "description": "Dil ismi",
+        "placeholders": {
+            "languageCode": {
+                "type": "String",
+                "example": "tr"
+            }
+        }
+    },
+    "formValidatorRequired": "Bu alan boş bırakılamaz.",
+    "formValidatorMinimumCharCount": "Bu alan minimum {charCount} karakterden oluşmalıdır.",
+    "@formValidatorMinimumCharCount": {
+        "placeholders": {
+            "charCount": {}
+        }
+    },
+    "formValidatorMaximumCharCount": "Bu alan maximum {charCount} karakterden oluşmalıdır.",
+    "@formValidatorMaximumCharCount": {
+        "placeholders": {
+            "charCount": {}
+        }
+    },
+    "formValidatorIsEmail": "E-posta geçerli değil.",
+    "formValidatorMatchedString": "Alanlar eşleşmiyor.",
+    "emailAlreadyInUse": "emailAlreadyInUse",
+    "invalidEmail": "invalidEmail",
+    "operationNotAllowed": "operationNotAllowed",
+    "weakPassword": "weakPassword",
+    "userDisabled": "userDisabled",
+    "userNotFound": "userNotFound",
+    "wrongPassword": "Wrong Password",
+    "requiresRecentLogin": "requiresRecentLogin",
+    "userMismatch": "userMismatch",
+    "invalidCredential": "invalidCredential",
+    "invalidVerificationCode": "invalidVerificationCode",
+    "invalidVerificationId": "invalidVerificationId",
+    "tooManyRequests": "We have blocked all requests from this device due to unusual activity. Try again later.",
+    "registeredSuccessfully": "Başarıyla kayıt olundu.",
+    "loginSuccessfully": "Başarıyla giriş yapıldı."
 }

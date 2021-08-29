@@ -56,45 +56,48 @@ class AccountScreenChanger extends ChangeNotifier {
 
   Widget homeScreen(){
     return Flexible(
-      child: ListView.separated(
-        itemCount: appAccountPages.length,
-        itemBuilder: (BuildContext context, int index){
-          Screens screen = appAccountPages[index];
-          return Ink(
-            decoration: BoxDecoration(
-              border: Border.all(),
-              borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-            ),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(10),
-              child: Container(
-                padding: const EdgeInsets.only(left:20, top: 10, bottom: 10),
-                height: 70,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Padding(padding: const EdgeInsets.only(right: 15), child: screen.icon),
-                            Text(screen.title, style: const TextStyle(fontSize: 20,)),
-                          ],
-                        ),
-                        Text(screen.subTitle, style: const TextStyle(fontSize: 12),)
-                      ],
-                    ),
-                    const Icon(Icons.arrow_right,size: 40,)
-                  ],
-                ),
+      child: Container(
+        margin: const EdgeInsets.all(20),
+        child: ListView.separated(
+          itemCount: appAccountPages.length,
+          itemBuilder: (BuildContext context, int index){
+            Screens screen = appAccountPages[index];
+            return Ink(
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: const BorderRadius.all(Radius.circular(10.0)),
               ),
-              onTap: () => goToSelectedIndexScreen(index)
-            ),
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  padding: const EdgeInsets.only(left:20, top: 10, bottom: 10),
+                  height: 70,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Padding(padding: const EdgeInsets.only(right: 15), child: screen.icon),
+                              Text(screen.title, style: const TextStyle(fontSize: 20,)),
+                            ],
+                          ),
+                          Text(screen.subTitle, style: const TextStyle(fontSize: 12),)
+                        ],
+                      ),
+                      const Icon(Icons.arrow_right,size: 40,)
+                    ],
+                  ),
+                ),
+                onTap: () => goToSelectedIndexScreen(index)
+              ),
+            );
+          },
+          separatorBuilder: (BuildContext context, int index) => const Divider(),
+        ),
       )
     );
   }

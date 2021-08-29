@@ -1,10 +1,12 @@
 // ignore_for_file: file_names
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
-import '../../Utils/validator_extensions.dart';
+import '../../Services/auth_service.dart';
+import '../../Utils/ReturnData.dart' show ReturnData;
+import '../../Components/AppSettingsModalBottomSheet.dart' show showAppSettingsModalBottomSheet;
+import '../../Components/SnackBars.dart' show showErrorMessageSnackBar, showSuccessMessageSnackBar;
+import '../../Utils/FormValidator.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -13,7 +15,21 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Register"),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text("Register"),
+            Tooltip(
+              message: "App Settings",
+              child: IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: (){
+                  showAppSettingsModalBottomSheet(context);
+                }
+              ),
+            ),
+          ],
+        ),
       ),
       body: const Body(),
     );
@@ -85,55 +101,19 @@ class _RegisterFormState extends State<RegisterForm> {
     });
   }
 
-  Future<void> showMyDialog(String title, String content) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(content),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context, rootNavigator: true).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> onFormSubmit() async {
-    if(registerFormKey.currentState!.validate()){
-      try {
-        await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-                email: emailInputController.text,
-                password: passwordInputController.text)
-            .then((createdUser) => {
-                  FirebaseFirestore.instance
-                      .collection("Users")
-                      .doc(emailInputController.text)
-                      .set({
-                    "name": nameInputController.text,
-                    "surname": surnameInputController.text,
-                    "email": emailInputController.text,
-                    "phoneNumber": phoneNumberInputController.text
-                  }),
-                  showMyDialog("Success", 'Registered successfully!')
-                });
-      } on FirebaseAuthException catch (err) {
-        showMyDialog("Error Code: " + err.code, err.message.toString());
-        /*
-          if (err.code == 'weak-password') {
-            showMyDialog("Error",'The password provided is too weak.');//Password should be at least 6 characters
-          } else if (err.code == 'emaıl-already-ın-use') {
-            showMyDialog("Error", 'The account already exists for that email.'); // The email address is already in use by another account
-          }
-          */
+    if(registerFormKey.currentState!.validate()){      
+      ReturnData result = await AuthService.instance.register(
+        emailInputController.text,
+        passwordInputController.text,
+        nameInputController.text,
+        surnameInputController.text,
+        phoneNumberInputController.text
+      );
+      if(result.isSuccessful) {
+        showSuccessMessageSnackBar(context, result.getMessage(context));
+      }else{
+        showErrorMessageSnackBar(context, result.getMessage(context));
       }
     }
   }
@@ -170,10 +150,9 @@ class _RegisterFormState extends State<RegisterForm> {
                       labelText: "Name", prefixIcon: Icon(Icons.badge)),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (String? value){
-                    if(value!.isEmpty){
-                      return "This area can not be empty.";
-                    }
-                    return null;
+                    return FormValidator.validate(
+                      required: true
+                    ).getMessage(context, value!);
                   }
                 ),
               )),
@@ -187,10 +166,9 @@ class _RegisterFormState extends State<RegisterForm> {
                       labelText: "Surname", prefixIcon: Icon(Icons.badge)),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (String? value){
-                    if(value!.isEmpty){
-                      return "This area can not be empty.";
-                    }
-                    return null;
+                    return FormValidator.validate(
+                      required: true
+                    ).getMessage(context, value!);
                   }
                 ),
               )),
@@ -207,13 +185,10 @@ class _RegisterFormState extends State<RegisterForm> {
                   labelText: "Email", prefixIcon: Icon(Icons.email)),
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (String? value){
-                if(value!.isEmpty){
-                  return "This area can not be empty.";
-                }
-                else if(!value.isEmail()) {
-                  return "This is not an e-mail.";
-                }
-                return null;
+                return FormValidator.validate(
+                  required: true,
+                  isEmail: true
+                ).getMessage(context, value!);
               }
             ),
           )),
@@ -232,10 +207,9 @@ class _RegisterFormState extends State<RegisterForm> {
                   labelText: "Phone Number", prefixIcon: Icon(Icons.phone)),
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (String? value){
-                if(value!.isEmpty){
-                  return "This area can not be empty.";
-                }
-                return null;
+                return FormValidator.validate(
+                  required: true
+                ).getMessage(context, value!);
               }
             ),
           )),
@@ -259,10 +233,9 @@ class _RegisterFormState extends State<RegisterForm> {
                     )),
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: (String? value){
-                  if(value!.isEmpty){
-                    return "This area can not be empty.";
-                  }
-                  return null;
+                  return FormValidator.validate(
+                    required: true
+                  ).getMessage(context, value!);
                 }
             ),
                 
@@ -287,12 +260,10 @@ class _RegisterFormState extends State<RegisterForm> {
                     )),
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: (String? value){
-                  if(value!.isEmpty){
-                    return "This area can not be empty.";
-                  }else if(value != passwordInputController.text){
-                    return "Passwords don't match.";
-                  }
-                  return null;
+                  return FormValidator.validate(
+                    required: true,
+                    matchedString: passwordInputController.text
+                  ).getMessage(context, value!);
                 }
               ),
           )),

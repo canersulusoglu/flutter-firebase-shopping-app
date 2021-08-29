@@ -2,16 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../Utils/providers.dart';
+import '../providers.dart';
 
-class SettingsModalBottomSheet extends StatefulWidget {
-  const SettingsModalBottomSheet({ Key? key }) : super(key: key);
+class AppSettingsModalBottomSheet extends StatefulWidget {
+  const AppSettingsModalBottomSheet({ Key? key }) : super(key: key);
 
   @override
-  _SettingsModalBottomSheetState createState() => _SettingsModalBottomSheetState();
+  _AppSettingsModalBottomSheetState createState() => _AppSettingsModalBottomSheetState();
 }
 
-class _SettingsModalBottomSheetState extends State<SettingsModalBottomSheet> {
+class _AppSettingsModalBottomSheetState extends State<AppSettingsModalBottomSheet> {
   late bool isDarkMode;
   late String language;
 
@@ -75,8 +75,8 @@ class _SettingsModalBottomSheetState extends State<SettingsModalBottomSheet> {
   }
 }
 
-void showSettingsModalBottomSheet(context){
+void showAppSettingsModalBottomSheet(context){
   showModalBottomSheet(context: context, builder: (BuildContext context){
-    return const SettingsModalBottomSheet();
+    return const AppSettingsModalBottomSheet();
   });
 }
