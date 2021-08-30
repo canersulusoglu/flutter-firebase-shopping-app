@@ -1,16 +1,16 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
 
-class ListsScreen extends StatefulWidget {
-  const ListsScreen({ Key? key }) : super(key: key);
+class AccountListsScreen extends StatefulWidget {
+  const AccountListsScreen({ Key? key }) : super(key: key);
 
   @override
-  _ListsScreenState createState() => _ListsScreenState();
+  _AccountListsScreenState createState() => _AccountListsScreenState();
 }
 
-class _ListsScreenState extends State<ListsScreen> {
+class _AccountListsScreenState extends State<AccountListsScreen> {
   @override
   Widget build(BuildContext context) {
-    return Text("ListsScreen");
+    return const Text("ListsScreen");
   }
 }

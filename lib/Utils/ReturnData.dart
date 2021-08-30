@@ -10,10 +10,14 @@ class ReturnData{
   bool isSuccessful;
   String? firebaseMessageCode;
   MessageCode? messageCode;
+  Map<String, dynamic>? data;
 
   ReturnData({required this.isSuccessful});
   ReturnData.withMessage({required this.isSuccessful, required this.messageCode});
   ReturnData.withFirebaseMessage({required this.isSuccessful, required this.firebaseMessageCode});
+  ReturnData.withOnlyData({required this.isSuccessful, required this.data});
+  ReturnData.withMessageAndData({required this.isSuccessful, required this.messageCode, required this.data});
+  ReturnData.withFirebaseMessageAndData({required this.isSuccessful, required this.firebaseMessageCode, required this.data});
 
   String getMessage(context){
     // Firebase Message Codes

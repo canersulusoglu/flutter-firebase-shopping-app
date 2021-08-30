@@ -5,14 +5,14 @@ import '../../Services/auth_service.dart';
 import '../../Utils/ReturnData.dart' show ReturnData;
 import '../../Utils/FormValidator.dart';
 
-class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({ Key? key }) : super(key: key);
+class AccountSettingsScreen extends StatefulWidget {
+  const AccountSettingsScreen({ Key? key }) : super(key: key);
 
   @override
-  _SettingsScreenState createState() => _SettingsScreenState();
+  _AccountSettingsScreenState createState() => _AccountSettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   TextEditingController nameInputController = TextEditingController(text: AuthService.instance.getLoggedUserData.name);
   TextEditingController surnameInputController = TextEditingController(text: AuthService.instance.getLoggedUserData.surname);
   TextEditingController emailInputController = TextEditingController(text: AuthService.instance.getLoggedUserData.email);
@@ -71,78 +71,156 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(right: 30),
-                    child: const CircleAvatar(
-                      radius: 45,
-                      child: Text("CS", style:TextStyle(fontSize: 24)),
-                    ),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(right: 30),
+                  child: const CircleAvatar(
+                    radius: 45,
+                    child: Text("CS", style:TextStyle(fontSize: 24)),
                   ),
-                  Form(
-                    key: changeNameAndSurnameFormKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Flex(
-                          direction: Axis.vertical,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text("Change your name and surname"),
-                            SizedBox(
-                              width: 200,
-                              child: TextFormField(
-                                autofocus: false,
-                                controller: nameInputController,
-                                decoration: const InputDecoration(labelText: "Name", prefixIcon: Icon(Icons.email),),
-                                autovalidateMode: AutovalidateMode.onUserInteraction,
-                                validator: (String? value){
-                                  return FormValidator.validate(
-                                    required: true
-                                  ).getMessage(context, value!);
-                                },
-                              ),
+                ),
+                Form(
+                  key: changeNameAndSurnameFormKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Flex(
+                        direction: Axis.vertical,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("Change your name and surname"),
+                          SizedBox(
+                            width: 200,
+                            child: TextFormField(
+                              autofocus: false,
+                              controller: nameInputController,
+                              decoration: const InputDecoration(labelText: "Name", prefixIcon: Icon(Icons.email),),
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              validator: (String? value){
+                                return FormValidator.validate(
+                                  required: true
+                                ).getMessage(context, value!);
+                              },
                             ),
-                            SizedBox(
-                              width: 250,
-                              child: TextFormField(
-                                autofocus: false,
-                                controller: surnameInputController,
-                                decoration: const InputDecoration(labelText: "Surname", prefixIcon: Icon(Icons.email),),
-                                autovalidateMode: AutovalidateMode.onUserInteraction,
-                                validator: (String? value){
-                                  return FormValidator.validate(
-                                    required: true
-                                  ).getMessage(context, value!);
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: 
-                          ElevatedButton(
-                            child: const Text("Confirm"),
-                            onPressed: changeNameAndSurname,
                           ),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                          SizedBox(
+                            width: 250,
+                            child: TextFormField(
+                              autofocus: false,
+                              controller: surnameInputController,
+                              decoration: const InputDecoration(labelText: "Surname", prefixIcon: Icon(Icons.email),),
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              validator: (String? value){
+                                return FormValidator.validate(
+                                  required: true
+                                ).getMessage(context, value!);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: 
+                        ElevatedButton(
+                          child: const Text("Confirm"),
+                          onPressed: changeNameAndSurname,
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
             ),
-            // E-Mail
-            Container(
-              margin: const EdgeInsets.all(20),
+          ),
+          // E-Mail
+          Container(
+            margin: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text("Change your e-mail address"),
+                  ],
+                ),
+                TextFormField(
+                  autofocus: false,
+                  controller: emailInputController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(labelText: "E-Mail", prefixIcon: Icon(Icons.email),),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (String? value){
+                    return FormValidator.validate(
+                      required: true,
+                      isEmail: true
+                    ).getMessage(context, value!);
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: 
+                  ElevatedButton(
+                    child: const Text("Confirm"),
+                    onPressed: () {},
+                  ),
+                )
+              ],
+            )
+          ),
+          // Telephone
+          Container(
+            margin: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text("Change your phone number"),
+                  ],
+                ),
+                TextFormField(
+                  autofocus: false,
+                  controller: phoneNumberInputController,
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [
+                    //PhoneInputFormatter(),
+                    MaskedInputFormatter('(###) ###-####', anyCharMatcher: RegExp(r"[0-9.]")),
+                  ],
+                  decoration: const InputDecoration(labelText: "Phone Number", prefixIcon: Icon(Icons.phone)),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (String? value){
+                    return FormValidator.validate(
+                      required: true
+                    ).getMessage(context, value!);
+                  }
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: 
+                  ElevatedButton(
+                    child: const Text("Confirm"),
+                    onPressed: () {},
+                  ),
+                )
+              ],
+            )
+          ),
+          // Password
+          Container(
+            margin: const EdgeInsets.all(20),
+            child: Form(
+              key: changePasswordFormKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -150,59 +228,73 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     direction: Axis.horizontal,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      Text("Change your e-mail address"),
+                      Text("Change your password"),
                     ],
                   ),
                   TextFormField(
+                      obscureText: oldPasswordIsHidden,
+                      autofocus: false,
+                      controller: oldPasswordInputController,
+                      decoration: InputDecoration(
+                          labelText: "Old Password",
+                          prefixIcon: const Icon(Icons.vpn_key),
+                          suffix: InkWell(
+                            onTap: toggleOldPasswordVisibility,
+                            child: Icon(
+                              oldPasswordIsHidden
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                          )),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (String? value){
+                        return FormValidator.validate(
+                          required: true
+                        ).getMessage(context, value!);
+                      }
+                  ),
+                  TextFormField(
+                      obscureText: newPasswordIsHidden,
+                      autofocus: false,
+                      controller: newPasswordInputController,
+                      decoration: InputDecoration(
+                          labelText: "New Password",
+                          prefixIcon: const Icon(Icons.vpn_key),
+                          suffix: InkWell(
+                            onTap: toggleNewPasswordVisibility,
+                            child: Icon(
+                              newPasswordIsHidden
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                          )),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (String? value){
+                        return FormValidator.validate(
+                          required: true
+                        ).getMessage(context, value!);
+                      }
+                  ),
+                  TextFormField(
+                    obscureText: newPasswordConfirmIsHidden,
                     autofocus: false,
-                    controller: emailInputController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(labelText: "E-Mail", prefixIcon: Icon(Icons.email),),
+                    controller: newPasswordConfirmInputController,
+                    decoration: InputDecoration(
+                        labelText: "New Password Confirm",
+                        prefixIcon: const Icon(Icons.vpn_key),
+                        suffix: InkWell(
+                          onTap: toggleNewPasswordConfirmVisibility,
+                          child: Icon(
+                            newPasswordConfirmIsHidden
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                        )),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (String? value){
                       return FormValidator.validate(
                         required: true,
-                        isEmail: true
-                      ).getMessage(context, value!);
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: 
-                    ElevatedButton(
-                      child: const Text("Confirm"),
-                      onPressed: () {},
-                    ),
-                  )
-                ],
-              )
-            ),
-            // Telephone
-            Container(
-              margin: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Flex(
-                    direction: Axis.horizontal,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text("Change your phone number"),
-                    ],
-                  ),
-                  TextFormField(
-                    autofocus: false,
-                    controller: phoneNumberInputController,
-                    keyboardType: TextInputType.phone,
-                    inputFormatters: [
-                      //PhoneInputFormatter(),
-                      MaskedInputFormatter('(###) ###-####', anyCharMatcher: RegExp(r"[0-9.]")),
-                    ],
-                    decoration: const InputDecoration(labelText: "Phone Number", prefixIcon: Icon(Icons.phone)),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (String? value){
-                      return FormValidator.validate(
-                        required: true
+                        matchedString: newPasswordInputController.text
                       ).getMessage(context, value!);
                     }
                   ),
@@ -211,109 +303,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: 
                     ElevatedButton(
                       child: const Text("Confirm"),
-                      onPressed: () {},
+                      onPressed: changePassword,
                     ),
                   )
                 ],
               )
-            ),
-            // Password
-            Container(
-              margin: const EdgeInsets.all(20),
-              child: Form(
-                key: changePasswordFormKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Flex(
-                      direction: Axis.horizontal,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text("Change your password"),
-                      ],
-                    ),
-                    TextFormField(
-                        obscureText: oldPasswordIsHidden,
-                        autofocus: false,
-                        controller: oldPasswordInputController,
-                        decoration: InputDecoration(
-                            labelText: "Old Password",
-                            prefixIcon: const Icon(Icons.vpn_key),
-                            suffix: InkWell(
-                              onTap: toggleOldPasswordVisibility,
-                              child: Icon(
-                                oldPasswordIsHidden
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                              ),
-                            )),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (String? value){
-                          return FormValidator.validate(
-                            required: true
-                          ).getMessage(context, value!);
-                        }
-                    ),
-                    TextFormField(
-                        obscureText: newPasswordIsHidden,
-                        autofocus: false,
-                        controller: newPasswordInputController,
-                        decoration: InputDecoration(
-                            labelText: "New Password",
-                            prefixIcon: const Icon(Icons.vpn_key),
-                            suffix: InkWell(
-                              onTap: toggleNewPasswordVisibility,
-                              child: Icon(
-                                newPasswordIsHidden
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                              ),
-                            )),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (String? value){
-                          return FormValidator.validate(
-                            required: true
-                          ).getMessage(context, value!);
-                        }
-                    ),
-                    TextFormField(
-                      obscureText: newPasswordConfirmIsHidden,
-                      autofocus: false,
-                      controller: newPasswordConfirmInputController,
-                      decoration: InputDecoration(
-                          labelText: "New Password Confirm",
-                          prefixIcon: const Icon(Icons.vpn_key),
-                          suffix: InkWell(
-                            onTap: toggleNewPasswordConfirmVisibility,
-                            child: Icon(
-                              newPasswordConfirmIsHidden
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                          )),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (String? value){
-                        return FormValidator.validate(
-                          required: true,
-                          matchedString: newPasswordInputController.text
-                        ).getMessage(context, value!);
-                      }
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: 
-                      ElevatedButton(
-                        child: const Text("Confirm"),
-                        onPressed: changePassword,
-                      ),
-                    )
-                  ],
-                )
-              )
             )
-          ],
-        ),
-      )
+          )
+        ],
+      ),
     );
   }
 }
