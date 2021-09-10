@@ -3,7 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import '../../Services/auth_service.dart';
-import '../../Utils/ReturnData.dart' show ReturnData;
+import '../../Services/service.dart' show ReturnData;
 import '../../Components/AppSettingsModalBottomSheet.dart' show showAppSettingsModalBottomSheet;
 import '../../Components/SnackBars.dart' show showErrorMessageSnackBar, showSuccessMessageSnackBar;
 import '../../Utils/FormValidator.dart';
@@ -46,26 +46,20 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(top: 30),
-            child: Image.asset("assets/images/registerScreenImage.png",
-                width: 280),
-          ),
-          Container(
-            margin: const EdgeInsets.all(40),
-            child: const SizedBox(
-              child: RegisterForm(),
-              height: 500,
-            ),
-          )
-        ],
-      )),
-    );
+    return SingleChildScrollView(
+      child: Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 30),
+          child: Image.asset("assets/images/registerScreenImage.png",
+              width: 280),
+        ),
+        Container(
+          margin: const EdgeInsets.all( 30),
+          child: const RegisterForm()
+        ),
+      ],
+    ));
   }
 }
 
@@ -83,8 +77,7 @@ class _RegisterFormState extends State<RegisterForm> {
   TextEditingController emailInputController = TextEditingController();
   TextEditingController phoneNumberInputController = TextEditingController();
   TextEditingController passwordInputController = TextEditingController();
-  TextEditingController passwordConfirmInputController =
-      TextEditingController();
+  TextEditingController passwordConfirmInputController = TextEditingController();
 
   bool passwordIsHidden = true;
   bool passwordConfirmIsHidden = true;
@@ -139,43 +132,45 @@ class _RegisterFormState extends State<RegisterForm> {
             ),
           ),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Flexible(
-                  child: Container(
-                margin: const EdgeInsets.only(bottom: 20, right: 5),
-                child: TextFormField(
-                  autofocus: false,
-                  controller: nameInputController,
-                  decoration: const InputDecoration(
-                      labelText: "Name", prefixIcon: Icon(Icons.badge)),
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (String? value){
-                    return FormValidator.validate(
-                      required: true
-                    ).getMessage(context, value!);
-                  }
-                ),
-              )),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 20, right: 5),
+                  child: TextFormField(
+                    autofocus: false,
+                    controller: nameInputController,
+                    decoration: const InputDecoration(
+                        labelText: "Name", prefixIcon: Icon(Icons.badge)),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (String? value){
+                      return FormValidator.validate(
+                        required: true
+                      ).getMessage(context, value!);
+                    }
+                  ),
+                )
+              ),
               Flexible(
-                  child: Container(
-                margin: const EdgeInsets.only(bottom: 20, left: 5),
-                child: TextFormField(
-                  autofocus: false,
-                  controller: surnameInputController,
-                  decoration: const InputDecoration(
-                      labelText: "Surname", prefixIcon: Icon(Icons.badge)),
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (String? value){
-                    return FormValidator.validate(
-                      required: true
-                    ).getMessage(context, value!);
-                  }
-                ),
-              )),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 20, left: 5),
+                  child: TextFormField(
+                    autofocus: false,
+                    controller: surnameInputController,
+                    decoration: const InputDecoration(
+                        labelText: "Surname", prefixIcon: Icon(Icons.badge)),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (String? value){
+                      return FormValidator.validate(
+                        required: true
+                      ).getMessage(context, value!);
+                    }
+                  ),
+                )
+              ),
             ],
           ),
-          Flexible(
-              child: Container(
+          Container(
             margin: const EdgeInsets.only(bottom: 20),
             child: TextFormField(
               autofocus: false,
@@ -191,9 +186,8 @@ class _RegisterFormState extends State<RegisterForm> {
                 ).getMessage(context, value!);
               }
             ),
-          )),
-          Flexible(
-            child: Container(
+          ),
+          Container(
             margin: const EdgeInsets.only(bottom: 20),
             child: TextFormField(
               autofocus: false,
@@ -212,61 +206,58 @@ class _RegisterFormState extends State<RegisterForm> {
                 ).getMessage(context, value!);
               }
             ),
-          )),
-          Flexible(
-              child: Container(
+          ),
+          Container(
             margin: const EdgeInsets.only(bottom: 20),
             child: TextFormField(
-                obscureText: passwordIsHidden,
-                autofocus: false,
-                controller: passwordInputController,
-                decoration: InputDecoration(
-                    labelText: "Password",
-                    prefixIcon: const Icon(Icons.vpn_key),
-                    suffix: InkWell(
-                      onTap: togglePasswordVisibility,
-                      child: Icon(
-                        passwordIsHidden
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                    )),
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (String? value){
-                  return FormValidator.validate(
-                    required: true
-                  ).getMessage(context, value!);
-                }
+              obscureText: passwordIsHidden,
+              autofocus: false,
+              controller: passwordInputController,
+              decoration: InputDecoration(
+                  labelText: "Password",
+                  prefixIcon: const Icon(Icons.vpn_key),
+                  suffix: InkWell(
+                    onTap: togglePasswordVisibility,
+                    child: Icon(
+                      passwordIsHidden
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                  )),
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (String? value){
+                return FormValidator.validate(
+                  required: true
+                ).getMessage(context, value!);
+              }
             ),
-                
-          )),
-          Flexible(
-              child: Container(
+          ),
+          Container(
             margin: const EdgeInsets.only(bottom: 20),
             child: TextFormField(
-                obscureText: passwordConfirmIsHidden,
-                autofocus: false,
-                controller: passwordConfirmInputController,
-                decoration: InputDecoration(
-                    labelText: "Password Confirm",
-                    prefixIcon: const Icon(Icons.vpn_key),
-                    suffix: InkWell(
-                      onTap: togglePasswordConfirmVisibility,
-                      child: Icon(
-                        passwordConfirmIsHidden
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                    )),
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (String? value){
-                  return FormValidator.validate(
-                    required: true,
-                    matchedString: passwordInputController.text
-                  ).getMessage(context, value!);
-                }
-              ),
-          )),
+              obscureText: passwordConfirmIsHidden,
+              autofocus: false,
+              controller: passwordConfirmInputController,
+              decoration: InputDecoration(
+                  labelText: "Password Confirm",
+                  prefixIcon: const Icon(Icons.vpn_key),
+                  suffix: InkWell(
+                    onTap: togglePasswordConfirmVisibility,
+                    child: Icon(
+                      passwordConfirmIsHidden
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                  )),
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (String? value){
+                return FormValidator.validate(
+                  required: true,
+                  matchedString: passwordInputController.text
+                ).getMessage(context, value!);
+              }
+            ),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

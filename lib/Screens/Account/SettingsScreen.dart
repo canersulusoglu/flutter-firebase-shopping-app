@@ -1,8 +1,8 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
+import '../../Services/service.dart' show ReturnData;
 import '../../Services/auth_service.dart';
-import '../../Utils/ReturnData.dart' show ReturnData;
 import '../../Utils/FormValidator.dart';
 
 class AccountSettingsScreen extends StatefulWidget {

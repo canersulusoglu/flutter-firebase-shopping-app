@@ -27,7 +27,7 @@ class _ApplicationState extends State<Application> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeModeChanger(ThemeMode.light)), // Default theme mode -> light
-        ChangeNotifierProvider(create: (_) => LanguageChanger(const Locale('tr', ''))) // Default language -> en
+        ChangeNotifierProvider(create: (_) => LanguageChanger(const Locale('en', ''))) // Default language -> en
       ],
       builder: (context, _) {
         return MaterialApp(

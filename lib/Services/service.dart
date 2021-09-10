@@ -1,5 +1,18 @@
-// ignore_for_file: file_names
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+ abstract class Service{
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+
+  FirebaseAuth get firebaseAuth => _firebaseAuth;
+  FirebaseFirestore get firebaseFirestore => _firebaseFirestore;
+  FirebaseStorage get firebaseStorage => _firebaseStorage;
+}
+
 
 enum MessageCode{
   registeredSuccessfully,
@@ -10,7 +23,7 @@ class ReturnData{
   bool isSuccessful;
   String? firebaseMessageCode;
   MessageCode? messageCode;
-  Map<String, dynamic>? data;
+  var data;
 
   ReturnData({required this.isSuccessful});
   ReturnData.withMessage({required this.isSuccessful, required this.messageCode});

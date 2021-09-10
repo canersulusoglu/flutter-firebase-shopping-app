@@ -40,5 +40,15 @@
     "invalidVerificationId": "invalidVerificationId",
     "tooManyRequests": "We have blocked all requests from this device due to unusual activity. Try again later.",
     "registeredSuccessfully": "Registered successfully.",
-    "loginSuccessfully": "Login successfully."
+    "loginSuccessfully": "Login successfully.",
+
+    "categories": "{categoryId, select, 0{Electronic} 0_0{Computers} 0_0_0{Laptops} 0_0_1{Desktop Computers} 0_1{Phones} 0_1_0{Android Phones} 1{Fashion - Clothing} other{Unknown}}",
+    "@categories": {
+        "description": "Categories name",
+        "placeholders": {
+            "categoryId": {
+                "type": "String"
+            }
+        }
+    }
 }

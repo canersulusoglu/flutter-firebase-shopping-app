@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import '../Services/auth_service.dart' show AuthService;
 import '../Components/AppSettingsModalBottomSheet.dart' show showAppSettingsModalBottomSheet;
-import '../Utils/ReturnData.dart';
+import '../../Services/service.dart' show ReturnData;
 // Screens
 import 'OnePageScreens/LoadingScreen.dart' show LoadingScreen;
 import 'OnePageScreens/DatabaseErrorScreen.dart' show DatabaseErrorScreen;

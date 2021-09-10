@@ -64,8 +64,12 @@ class _AppAccountScreenState extends State<AppAccountScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        _navigatorKey.currentState!.maybePop();
-        return false;
+        if(selectedScreenIndex != -1){
+          _goBack();
+          return false;
+        }else{
+          return true;
+        }
       },
       child: Scaffold(
         appBar: PreferredSize(
@@ -107,7 +111,7 @@ class _AppAccountScreenState extends State<AppAccountScreen> {
 
             switch (routeName) {
               case routeAccountHomePage:
-                page = AccountHomeScreen(goToScreenPressed: _goToScreen);
+                page = AccountHomeScreen(goToScreen: _goToScreen);
                 break;
               case routeAccountSettingsPage:
                 page = const AccountSettingsScreen();
@@ -128,7 +132,7 @@ class _AppAccountScreenState extends State<AppAccountScreen> {
                 page = const AccountCustomerServiceScreen();
                 break;
               default:
-                page = AccountHomeScreen(goToScreenPressed: _goToScreen);
+                page = AccountHomeScreen(goToScreen: _goToScreen);
                 break;
             }
 

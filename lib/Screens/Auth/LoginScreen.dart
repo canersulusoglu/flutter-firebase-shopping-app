@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../../Services/auth_service.dart';
 import '../../Components/AppSettingsModalBottomSheet.dart' show showAppSettingsModalBottomSheet;
 import '../../Components/SnackBars.dart' show showErrorMessageSnackBar, showSuccessMessageSnackBar;
-import '../../Utils/ReturnData.dart';
+import '../../Services/service.dart' show ReturnData;
 import '../../Utils/FormValidator.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -45,9 +45,8 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-          child: Column(
+    return SingleChildScrollView(
+      child: Column(
         children: [
           Container(
             margin: const EdgeInsets.only(bottom: 30),
@@ -56,13 +55,10 @@ class _BodyState extends State<Body> {
           ),
           Container(
             margin: const EdgeInsets.all(40),
-            child: const SizedBox(
-              child: LoginForm(),
-              height: 250,
-            ),
+            child: const LoginForm(),
           )
         ],
-      )),
+      )
     );
   }
 }
@@ -118,14 +114,16 @@ class _LoginFormState extends State<LoginForm> {
             ],
           ),
         ),
-        Flexible(
-            child: Container(
-          margin: const EdgeInsets.only(bottom: 20),
+        Container(
+          padding: const EdgeInsets.only(bottom: 20),
           child: TextFormField(
             autofocus: false,
             controller: emailInputController,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(labelText: "Email", prefixIcon: Icon(Icons.email),),
+            decoration: const InputDecoration(
+              labelText: "Email", 
+              prefixIcon: Icon(Icons.email),
+            ),
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (String? value){
               return FormValidator.validate(
@@ -134,33 +132,29 @@ class _LoginFormState extends State<LoginForm> {
               ).getMessage(context, value!);
             },
           ),
-        )),
-        Flexible(
-            child: Container(
-          margin: const EdgeInsets.only(bottom: 20),
-          child: TextFormField(
-              obscureText: passwordIsHidden,
-              autofocus: false,
-              controller: passwordInputController,
-              decoration: InputDecoration(
-                  labelText: "Password",
-                  prefixIcon: const Icon(Icons.vpn_key),
-                  suffix: InkWell(
-                    onTap: togglePasswordVisibility,
-                    child: Icon(
-                      passwordIsHidden
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                  )),
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (String? value){
-                return FormValidator.validate(
-                  required: true,
-                ).getMessage(context, value!);
-              }
-            ),
-        )),
+        ),
+        TextFormField(
+          obscureText: passwordIsHidden,
+          autofocus: false,
+          controller: passwordInputController,
+          decoration: InputDecoration(
+              labelText: "Password",
+              prefixIcon: const Icon(Icons.vpn_key),
+              suffix: InkWell(
+                onTap: togglePasswordVisibility,
+                child: Icon(
+                  passwordIsHidden
+                      ? Icons.visibility
+                      : Icons.visibility_off,
+                ),
+              )),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (String? value){
+            return FormValidator.validate(
+              required: true,
+            ).getMessage(context, value!);
+          }
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

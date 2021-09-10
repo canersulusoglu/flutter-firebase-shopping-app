@@ -1,12 +1,12 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
-import '../AccountScreen.dart' show Screen, accountPages;
+import '../AccountScreen.dart' show accountPages, Screen;
 
-typedef GoToScreenPressedCallback = Function(int routeIndex);
+typedef GoToScreenCallback = Function(int routeIndex);
 
 class AccountHomeScreen extends StatefulWidget {
-  final GoToScreenPressedCallback goToScreenPressed;
-  const AccountHomeScreen({ Key? key, required this.goToScreenPressed }) : super(key: key);
+  final GoToScreenCallback goToScreen;
+  const AccountHomeScreen({ Key? key, required this.goToScreen }) : super(key: key);
 
   @override
   _AccountHomeScreenState createState() => _AccountHomeScreenState();
@@ -52,7 +52,7 @@ class _AccountHomeScreenState extends State<AccountHomeScreen> {
                   ],
                 ),
               ),
-              onTap: () => widget.goToScreenPressed(index)
+              onTap: () => widget.goToScreen(index)
             ),
           );
         },

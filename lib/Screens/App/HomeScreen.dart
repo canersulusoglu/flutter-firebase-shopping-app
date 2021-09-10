@@ -2,14 +2,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class AppHomeScreen extends StatelessWidget {
-  const AppHomeScreen({Key? key}) : super(key: key);
+class AppHomeScreen extends StatefulWidget {
+  const AppHomeScreen({ Key? key }) : super(key: key);
 
+  @override
+  _AppHomeScreenState createState() => _AppHomeScreenState();
+}
+
+class _AppHomeScreenState extends State<AppHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-          child: Column(
+        child: Column(
         children: [
           const Text("Home Screen"),
           Text(AppLocalizations.of(context)!.helloWorld),

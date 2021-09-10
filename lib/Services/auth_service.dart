@@ -1,17 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../Utils/ReturnData.dart';
+import 'service.dart' show Service, ReturnData, MessageCode;
+import '../Types/UserData.dart' show UserData;
 
-class UserData{
-  String? name;
-  String? surname;
-  String? email;
-  String? phoneNumber;
-  UserData({this.name, this.surname, this.email, this.phoneNumber});
-}
-
-class AuthService{
+class AuthService extends Service{
   static final AuthService _instance = AuthService._internal();
   factory AuthService() {
     return _instance;
@@ -19,17 +12,15 @@ class AuthService{
   AuthService._internal();
   static AuthService get instance => _instance;
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _store = FirebaseFirestore.instance;
   UserData _loggedUserData = UserData();
 
-  bool get isUserLoggedIn => (_auth.currentUser != null); 
+  bool get isUserLoggedIn => (firebaseAuth.currentUser != null); 
   UserData get getLoggedUserData => _loggedUserData;
   
   Future<ReturnData> register(String email, String password, String name, String surname, String phoneNumber) async{
     try {
       if(!isUserLoggedIn){
-        UserCredential authResult = await _auth.createUserWithEmailAndPassword(email: email,password: password);
+        UserCredential authResult = await firebaseAuth.createUserWithEmailAndPassword(email: email,password: password);
         await FirebaseFirestore.instance.collection("Users").doc(authResult.user!.uid).set({
           "name": name,
           "surname": surname,
@@ -49,7 +40,7 @@ class AuthService{
   Future<ReturnData> loginWithEmailAndPassword(String email, String password) async{
     try {
       if(!isUserLoggedIn){
-        UserCredential authResult = await _auth.signInWithEmailAndPassword(email: email,password: password);
+        UserCredential authResult = await firebaseAuth.signInWithEmailAndPassword(email: email,password: password);
         return ReturnData.withMessage(isSuccessful: true, messageCode: MessageCode.loginSuccessfully);
       }
       return ReturnData(isSuccessful: false);
@@ -62,7 +53,7 @@ class AuthService{
   Future<bool> logOut() async{
     try {
       if(isUserLoggedIn){
-        await _auth.signOut();
+        await firebaseAuth.signOut();
         return true;
       }
       return false;
@@ -74,7 +65,7 @@ class AuthService{
 
   Future<ReturnData> fetchLoggedUserData() async{
     if(isUserLoggedIn){
-      DocumentSnapshot<Map<String, dynamic>> userData = await FirebaseFirestore.instance.collection("Users").doc(_auth.currentUser!.uid).get();
+      DocumentSnapshot<Map<String, dynamic>> userData = await FirebaseFirestore.instance.collection("Users").doc(firebaseAuth.currentUser!.uid).get();
       _loggedUserData = UserData(
         name: userData.data()!['name'],
         surname: userData.data()!['surname'],
@@ -90,7 +81,7 @@ class AuthService{
   Future<bool> changeUserNameAndSurname(String newName, String newSurname) async{
     try {
       if(isUserLoggedIn){
-        await _store.collection("Users").doc(_auth.currentUser?.uid).update({
+        await firebaseFirestore.collection("Users").doc(firebaseAuth.currentUser?.uid).update({
           'name': newName,
           'surname': newSurname
         });
@@ -108,8 +99,8 @@ class AuthService{
   Future<bool> changeEmail(String newEmail) async {
     try {
       if(isUserLoggedIn){
-        await _auth.currentUser?.updateEmail(newEmail);
-        await _store.collection("Users").doc(_auth.currentUser?.uid).update({
+        await firebaseAuth.currentUser?.updateEmail(newEmail);
+        await firebaseFirestore.collection("Users").doc(firebaseAuth.currentUser?.uid).update({
           'email': newEmail
         });
         _loggedUserData.email = newEmail;
@@ -126,7 +117,7 @@ class AuthService{
     try {
       if(isUserLoggedIn){
         //await _auth.currentUser?.updatePhoneNumber();
-        await _store.collection("Users").doc(_auth.currentUser?.uid).update({
+        await firebaseFirestore.collection("Users").doc(firebaseAuth.currentUser?.uid).update({
           'phoneNumber': newPhoneNumber
         });
         _loggedUserData.phoneNumber = newPhoneNumber;
@@ -142,10 +133,10 @@ class AuthService{
   Future<ReturnData> changePassword(String oldPassword, String newPassword) async {
     try {
       if(isUserLoggedIn){
-        AuthCredential credential = EmailAuthProvider.credential(email: _auth.currentUser!.email.toString(), password: oldPassword);
-        await _auth.currentUser!.reauthenticateWithCredential(credential)
+        AuthCredential credential = EmailAuthProvider.credential(email: firebaseAuth.currentUser!.email.toString(), password: oldPassword);
+        await firebaseAuth.currentUser!.reauthenticateWithCredential(credential)
         .then((UserCredential userCredential) => {
-          _auth.currentUser?.updatePassword(newPassword),
+          firebaseAuth.currentUser?.updatePassword(newPassword),
         });
       }
       return ReturnData(isSuccessful: true);

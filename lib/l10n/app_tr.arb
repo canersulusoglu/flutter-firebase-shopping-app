@@ -40,5 +40,15 @@
     "invalidVerificationId": "invalidVerificationId",
     "tooManyRequests": "We have blocked all requests from this device due to unusual activity. Try again later.",
     "registeredSuccessfully": "Başarıyla kayıt olundu.",
-    "loginSuccessfully": "Başarıyla giriş yapıldı."
+    "loginSuccessfully": "Başarıyla giriş yapıldı.",
+
+    "categories": "{categoryId, select, 0{Elektronik} 0_0{Bilgisayalar} 0_0_0{Laptoplar} 0_0_1{Masaüstü Bilgisayalar} 0_1{Telefonlar} 0_1_0{Android Telefonlar} 1{Moda - Giyim} other{Unknown}}",
+    "@categories": {
+        "description": "Categories name",
+        "placeholders": {
+            "categoryId": {
+                "type": "String"
+            }
+        }
+    }
 }
