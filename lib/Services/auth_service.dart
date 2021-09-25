@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'service.dart' show Service, ReturnData, MessageCode;
-import '../Types/UserData.dart' show UserData;
+import '../DataTypes/UserData.dart' show UserData;
 
 class AuthService extends Service{
   static final AuthService _instance = AuthService._internal();

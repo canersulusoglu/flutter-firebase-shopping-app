@@ -5,17 +5,8 @@ import '../constants.dart' show Category;
 import '../Utils/RandomColor.dart';
 import '../Services/service.dart' show ReturnData;
 import '../Services/product_service.dart' show ProductService;
-import '../Types/Product.dart' show Product, ProductVendor, ProductScreenArgs;
-
-List<String> test = [
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7"
-];
+import '../DataTypes/FirebaseDataTypes.dart' show Product, ProductVendor;
+import '../DataTypes/Arguments.dart' show ProductScreenArgs;
 
 class AppProductListScreen extends StatefulWidget {
   final Category category;
@@ -134,14 +125,13 @@ class SubCategoryCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               FutureBuilder(
-                future: category.getImageUrl(),
+                future: category.getImage(),
                 builder: (context, AsyncSnapshot snap) {
                   if (snap.connectionState == ConnectionState.done) {
-                    return Image.network(snap.data, width: 45,);
-                  } else if (snap.connectionState == ConnectionState.none) {
-                    return const Text("No data");
+                    return snap.data;
+                  }else{
+                    return const CircularProgressIndicator();
                   }
-                  return const CircularProgressIndicator();
                 },
               ),
               Expanded(
@@ -202,35 +192,37 @@ class _ProductCardState extends State<ProductCard> {
                 children: [
                   Column(
                     children: [
-                      CarouselSlider.builder(
-                        itemCount: data.length, 
-                        itemBuilder: (BuildContext context, int index, int pageViewIndex){
-                          return Image.network(
-                            data[index],
-                            fit: BoxFit.fitHeight,
-                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: (loadingProgress.expectedTotalBytes != null) 
-                                      ? 
-                                      loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              );
-                            },
-                          );
-                        }, 
-                        options: CarouselOptions(
-                          viewportFraction: 1,
-                          height: 200,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _currentimageIndex = index;
-                            });
-                          }
+                      if (data.isNotEmpty) ...[
+                        CarouselSlider.builder(
+                          itemCount: data.length, 
+                          itemBuilder: (BuildContext context, int index, int pageViewIndex){
+                            return Image.network(
+                              data[index],
+                              fit: BoxFit.fitHeight,
+                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: (loadingProgress.expectedTotalBytes != null) 
+                                        ? 
+                                        loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
+                            );
+                          }, 
+                          options: CarouselOptions(
+                            viewportFraction: 1,
+                            height: 200,
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                _currentimageIndex = index;
+                              });
+                            }
+                          ),
                         ),
-                      ),
+                      ],
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: data.asMap().entries.map((entry) {

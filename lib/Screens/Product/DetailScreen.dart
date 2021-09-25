@@ -1,13 +1,14 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
-import '../../Types/Product.dart' show ProductScreenArgs;
+import '../../DataTypes/Arguments.dart' show ProductScreenArgs;
 
 typedef GoBackCallback = Function(int routeIndex);
 
+
 class ProductDetailScreen extends StatefulWidget {
-  ProductScreenArgs args;
+  final ProductScreenArgs args;
   final VoidCallback goToProductHomeScreen;
-  ProductDetailScreen({ Key? key, required this.args, required this.goToProductHomeScreen }) : super(key: key);
+  const ProductDetailScreen({ Key? key, required this.args, required this.goToProductHomeScreen }) : super(key: key);
 
   @override
   _ProductDetailScreenState createState() => _ProductDetailScreenState();

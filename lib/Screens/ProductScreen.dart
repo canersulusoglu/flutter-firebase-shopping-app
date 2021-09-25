@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
-import '../Types/Product.dart' show ProductScreenArgs;
+import '../DataTypes/Arguments.dart' show ProductScreenArgs, VendorScreenArgs;
 // Screens
 import 'Product/HomeScreen.dart' show ProductHomeScreen;
 import 'Product/DetailScreen.dart' show ProductDetailScreen;
@@ -36,6 +36,10 @@ class _AppProductScreenState extends State<AppProductScreen> {
     currentScreen = routeProductDetailPage;
   }
 
+  void _goToVendorScreen(String vendorId){
+    Navigator.of(context).pushNamed("vendor", arguments: VendorScreenArgs(vendorId: vendorId));
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -60,7 +64,8 @@ class _AppProductScreenState extends State<AppProductScreen> {
                 page = ProductHomeScreen(
                   args: widget.args,
                   exitProductScreen: _exitProductScreen,
-                  goToProductDetailScreen: _goToProductDetailScreen
+                  goToProductDetailScreen: _goToProductDetailScreen,
+                  goToVendorScreen: _goToVendorScreen
                 );
                 break;
               case routeProductDetailPage:
@@ -73,7 +78,8 @@ class _AppProductScreenState extends State<AppProductScreen> {
                 page = ProductHomeScreen(
                   args: widget.args,
                   exitProductScreen: _exitProductScreen,
-                  goToProductDetailScreen: _goToProductDetailScreen
+                  goToProductDetailScreen: _goToProductDetailScreen,
+                  goToVendorScreen: _goToVendorScreen
                 );
                 break;
             }

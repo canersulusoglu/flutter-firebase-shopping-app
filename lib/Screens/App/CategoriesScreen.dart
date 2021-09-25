@@ -29,6 +29,7 @@ class _AppCategoriesScreenState extends State<AppCategoriesScreen> {
          return GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
+            childAspectRatio: 0.75
           ),
           itemCount: productCategories[topCategoryIndex].subCategories.length,
           itemBuilder: (BuildContext context, int index){
@@ -48,14 +49,13 @@ class _AppCategoriesScreenState extends State<AppCategoriesScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       FutureBuilder(
-                        future: productCategories[topCategoryIndex].subCategories[index].getImageUrl(),
+                        future: productCategories[topCategoryIndex].subCategories[index].getImage(),
                         builder: (context, AsyncSnapshot snap) {
                           if (snap.connectionState == ConnectionState.done) {
-                            return Image.network(snap.data, width: 45,);
-                          } else if (snap.connectionState == ConnectionState.none) {
-                            return const Text("No data");
+                            return Container(child: snap.data, padding: const EdgeInsets.all(5));
+                          }else{
+                            return const CircularProgressIndicator();
                           }
-                          return const CircularProgressIndicator();
                         },
                       ),
                       Text(productCategories[topCategoryIndex].subCategories[index].getName(context), textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,)
@@ -147,7 +147,7 @@ class _SideCategoryItemState extends State<SideCategoryItem> {
 
   Future? _beforeLoadFetchImage;
   Future? beforeLoadFetchImage() async {
-    return await productCategories[widget.index].getImageUrl();
+    return await productCategories[widget.index].getImage();
   }
 
   @override
@@ -159,7 +159,7 @@ class _SideCategoryItemState extends State<SideCategoryItem> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 100,
+      height: 120,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -167,14 +167,13 @@ class _SideCategoryItemState extends State<SideCategoryItem> {
             future: _beforeLoadFetchImage,
             builder: (context, AsyncSnapshot snap) {
               if (snap.connectionState == ConnectionState.done) {
-                return Image.network(snap.data, width: 45,);
-              } else if (snap.connectionState == ConnectionState.none) {
-                return const Text("No data");
+                return Container(child: snap.data, padding: const EdgeInsets.all(5));
+              }else{
+                return const CircularProgressIndicator();
               }
-              return const CircularProgressIndicator();
             },
           ),
-          Text(productCategories[widget.index].getName(context), textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,)
+          Text(productCategories[widget.index].getName(context), textAlign: TextAlign.center, maxLines: 2,)
         ],
       ),
     );

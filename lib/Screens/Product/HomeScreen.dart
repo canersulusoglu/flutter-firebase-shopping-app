@@ -1,37 +1,31 @@
 // ignore_for_file: file_names
-import 'package:flutter/gestures.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_firebase_shopping_app/Types/Product.dart';
 import '../../Screens/OnePageScreens/LoadingScreen.dart' show LoadingScreen;
 import '../../Screens/OnePageScreens/DatabaseErrorScreen.dart' show DatabaseErrorScreen;
 import '../../Utils/ThemeData.dart';
 import '../../Services/service.dart' show ReturnData;
 import '../../Services/product_service.dart' show ProductService;
-import '../../Types/Product.dart' show ProductScreenArgs;
+import '../../DataTypes/FirebaseDataTypes.dart';
+import '../../DataTypes/Arguments.dart' show ProductScreenArgs, VendorScreenArgs;
 
-final List<String> imgList = [
-  'https://samsung.akinoncdn.com/products/2020/12/29/5241/01e5dc7c-83e4-4382-bf1e-23776b89bbe0_size616x616.jpg',
-  'https://samsung.akinoncdn.com/products/2020/12/29/5241/1e492b2d-5a06-4bbb-bd74-32f8b35c0fa5_size616x616.jpg',
-  'https://samsung.akinoncdn.com/products/2020/12/29/5241/02ae5a1b-60b9-4864-a92b-ee527cae6f4d_size616x616.jpg',
-  'https://samsung.akinoncdn.com/products/2020/12/29/5241/cfc77fca-f2fc-47fc-9607-a514aa8139e9_size616x616.jpg',
-  'https://samsung.akinoncdn.com/products/2020/12/29/5241/2cc1bb59-eb33-4391-a861-3b470510054d_size616x616.jpg',
-  'https://m.media-amazon.com/images/I/71S+uKt3FLS._AC_SL1500_.jpg'
-];
-
-final List<String> otherSellersList = [
-  "1",
-  "2",
-  "3",
-  "4"
-];
+typedef GoToVendorScreenCallback = void Function(String vendorId);
 
 class ProductHomeScreen extends StatefulWidget {
-  ProductScreenArgs args;
+  final ProductScreenArgs args;
   final VoidCallback exitProductScreen;
   final VoidCallback goToProductDetailScreen;
-  ProductHomeScreen({ Key? key, required this.args, required this.exitProductScreen, required this.goToProductDetailScreen }) : super(key: key);
+  final GoToVendorScreenCallback goToVendorScreen;
+  const ProductHomeScreen({ 
+    Key? key, 
+    required this.args, 
+    required this.exitProductScreen, 
+    required this.goToProductDetailScreen,
+    required this.goToVendorScreen
+  }) : super(key: key);
 
   @override
   _ProductHomeScreenState createState() => _ProductHomeScreenState();
@@ -54,12 +48,12 @@ class _ProductHomeScreenState extends State<ProductHomeScreen> {
     return imgList;
   }
 
-  Future<ProductVendorDetail>? fetchProductVendorData() async {
+  Future<Vendor?> fetchProductVendorData() async {
     if(widget.args.vendorReference != null){
       ReturnData result = await ProductService.instance.getProductVendorData(widget.args.vendorReference!);
       return result.data;
     }
-    return ProductVendorDetail(name: "Unknown", vendorId: "null", score: -1);
+    return null;
   }
 
   Future<Brand>? fetchProductBrandData(brandReference) async {
@@ -78,8 +72,8 @@ class _ProductHomeScreenState extends State<ProductHomeScreen> {
         if(productSnapData.data == null){
           return const LoadingScreen();
         }else{
-          ProductVendor? productVendor = productSnapData.data!.vendors.firstWhere((e) => e.vendorReference== widget.args.vendorReference);
-          List<ProductVendor>? otherVendors = productSnapData.data!.vendors.where((e) => e.vendorReference != widget.args.vendorReference).toList();
+          ProductVendor? productVendor = productSnapData.data!.getChipestProductVendor();
+          List<ProductVendor>? otherVendors = productSnapData.data!.getOtherProductVendors();
           return SafeArea(
             child: Stack(
               children: [
@@ -209,9 +203,9 @@ class _ProductHomeScreenState extends State<ProductHomeScreen> {
                                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                                       Row(
                                         children: const[
-                                          Text("4,7"),
+                                          Text("---"),
                                           Icon(Icons.star, color: Colors.yellow,),
-                                          Text("Tüm Değerlendirmeler (393)")
+                                          Text("Tüm Değerlendirmeler (---)")
                                         ],
                                       ),
                                     ],
@@ -226,7 +220,7 @@ class _ProductHomeScreenState extends State<ProductHomeScreen> {
                                           const Text("Satıcı", style: TextStyle(fontSize:20, fontWeight: FontWeight.w600),),
                                           FutureBuilder(
                                             future: fetchProductVendorData(),
-                                            builder: (BuildContext context, AsyncSnapshot<ProductVendorDetail> productVendorDataSnap){
+                                            builder: (BuildContext context, AsyncSnapshot<Vendor?> productVendorDataSnap){
                                               if(productVendorDataSnap.data == null){
                                                 return const CircularProgressIndicator();
                                               }else{
@@ -234,7 +228,15 @@ class _ProductHomeScreenState extends State<ProductHomeScreen> {
                                                   children: [
                                                     Padding(
                                                       padding: const EdgeInsets.only(right: 10),
-                                                      child: Text(productVendorDataSnap.data!.name, style: const TextStyle(fontSize:18, fontWeight:FontWeight.w900, color: Colors.indigo)),
+                                                      child: GestureDetector(
+                                                        child: Text(
+                                                          productVendorDataSnap.data!.name, 
+                                                          style: TextStyle(fontSize:18, fontWeight:FontWeight.w900, color: Theme.of(context).colorScheme.secondary)
+                                                        ),
+                                                        onTap: () => {
+                                                          widget.goToVendorScreen(productVendorDataSnap.data!.vendorId)
+                                                        },
+                                                      )
                                                     ),
                                                     Container(
                                                       decoration: const BoxDecoration(
@@ -242,7 +244,7 @@ class _ProductHomeScreenState extends State<ProductHomeScreen> {
                                                         borderRadius: BorderRadius.all(Radius.circular(10))
                                                       ),
                                                       padding: const EdgeInsets.only(right: 10,left: 10,top: 5,bottom: 5),
-                                                      child: Text(productVendorDataSnap.data!.score.toString(), style: const TextStyle(color: Colors.white),),
+                                                      child: Text("---", style: const TextStyle(color: Colors.white),),
                                                     )
                                                   ],
                                                 );
@@ -268,17 +270,19 @@ class _ProductHomeScreenState extends State<ProductHomeScreen> {
                                   ),
                                   const Divider(thickness: 3,height: 40,),
                                   // Diğer Satıcılar
-                                  if(otherVendors.isNotEmpty) ...[
+                                  if(otherVendors != null && otherVendors.isNotEmpty) ...[
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text("Diğer Satıcılar (${otherVendors.length})", style: const TextStyle(fontSize:16),),
+                                      Container(
+                                        margin: const EdgeInsets.only(bottom: 20),
+                                        child: Text("Diğer Satıcılar (${otherVendors.length})", style: const TextStyle(fontSize:16),),
+                                      ),
                                       CarouselSlider.builder(
                                         carouselController: _otherSellersSlidercontroller,
                                         options: CarouselOptions(
-                                          viewportFraction: 0.65,
-                                          height: 200,
-                                          enableInfiniteScroll: false
+                                          enableInfiniteScroll: false,
+                                          height: 300
                                         ),
                                         itemCount: otherVendors.length, 
                                         itemBuilder: (BuildContext context, int index, int pageViewIndex){
@@ -288,70 +292,163 @@ class _ProductHomeScreenState extends State<ProductHomeScreen> {
                                               if(otherVendorSnap.data == null){
                                                 return const CircularProgressIndicator();
                                               }else{
-                                                ProductVendorDetail vendor = otherVendorSnap.data!.data;
-                                                return Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Theme.of(context).colorScheme.background,
-                                                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Colors.grey.withOpacity(0.5),
-                                                        spreadRadius: 5,
-                                                        blurRadius: 7,
-                                                        offset: const Offset(0, 3), // changes position of shadow
+                                                Vendor vendor = otherVendorSnap.data!.data;
+                                                return Card(
+                                                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+                                                  child: InkWell(
+                                                    onTap: () {},
+                                                    child: Container(
+                                                      decoration: const BoxDecoration(
+                                                        borderRadius: BorderRadius.all(Radius.circular(10))
                                                       ),
-                                                    ],
-                                                  ),
-                                                  margin: const EdgeInsets.only(top: 10, bottom:10),
-                                                  padding: const EdgeInsets.all(20),
-                                                  width: 230,
-                                                  child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Container(
-                                                        margin: const EdgeInsets.only(bottom: 20),
-                                                        child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.start,
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            Container(
-                                                              decoration: const BoxDecoration(
-                                                                color: Colors.green,
-                                                                borderRadius: BorderRadius.all(Radius.circular(10))
-                                                              ),
-                                                              padding: const EdgeInsets.only(right: 10,left: 10,top: 5,bottom: 5),
-                                                              margin: const EdgeInsets.only(right: 10),
-                                                              child: Text(vendor.score.toString(), style: const TextStyle(color: Colors.white),),
+                                                      margin: const EdgeInsets.only(top: 10, bottom:10),
+                                                      padding: const EdgeInsets.only(top: 10, right: 20, left: 20),
+                                                      width: 250,
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Container(
+                                                            margin: const EdgeInsets.only(bottom: 20),
+                                                            child: Row(
+                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                                              children: [
+                                                                Container(
+                                                                  decoration: const BoxDecoration(
+                                                                    color: Colors.green,
+                                                                    borderRadius: BorderRadius.all(Radius.circular(10))
+                                                                  ),
+                                                                  padding: const EdgeInsets.only(right: 10,left: 10,top: 5,bottom: 5),
+                                                                  margin: const EdgeInsets.only(right: 10),
+                                                                  child: Text("---", style: const TextStyle(color: Colors.white),),
+                                                                ),
+                                                                Expanded(
+                                                                  child: GestureDetector(
+                                                                    child: Text(
+                                                                      vendor.name, 
+                                                                      style: TextStyle(fontSize:16, fontWeight:FontWeight.w900, color: Theme.of(context).colorScheme.secondary),
+                                                                      maxLines: 2,
+                                                                      overflow: TextOverflow.ellipsis, 
+                                                                      textAlign: TextAlign.end
+                                                                    ),
+                                                                    onTap: () => widget.goToVendorScreen(vendor.vendorId),
+                                                                  )
+                                                                )
+                                                              ],
                                                             ),
-                                                            Padding(
-                                                              padding: const EdgeInsets.only(right: 10),
-                                                              child: Text(vendor.name, style: const TextStyle(fontSize:18, fontWeight:FontWeight.w900, color: Colors.indigo)),
+                                                          ),
+                                                          Row(
+                                                            children: [
+                                                              if (otherVendors[index].discount != 0) ...[
+                                                                Container(
+                                                                  padding: const EdgeInsets.all(8),
+                                                                  margin: const EdgeInsets.only(right: 10),
+                                                                  decoration: BoxDecoration(
+                                                                    color: Colors.red,
+                                                                    borderRadius: BorderRadius.circular(5)
+                                                                  ),
+                                                                  child: Text(
+                                                                    "%" + otherVendors[index].discount.toString(),
+                                                                    style: const TextStyle(
+                                                                      fontWeight: FontWeight.w600,
+                                                                      fontSize: 14,
+                                                                      color: Colors.white
+                                                                    )
+                                                                  ),
+                                                                )
+                                                              ],
+                                                              Column(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  if(otherVendors[index].cartDiscount != 0) ...[
+                                                                    Text(
+                                                                      "Sepette %${ otherVendors[index].cartDiscount} indirimli fiyat", 
+                                                                      style: TextStyle(
+                                                                        fontSize: 14,
+                                                                        color: Theme.of(context).additionalColorScheme.success
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      otherVendors[index].getPriceWithCartDiscount().toStringAsFixed(2) + " TL", 
+                                                                      style: TextStyle(
+                                                                        fontSize: 20,
+                                                                        fontWeight: FontWeight.w900,
+                                                                        color: Theme.of(context).additionalColorScheme.success
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      otherVendors[index].getPriceWithDiscount().toStringAsFixed(2) + " TL", 
+                                                                      style: const TextStyle(
+                                                                        fontSize: 14, 
+                                                                        fontWeight: FontWeight.w900,
+                                                                        decoration: TextDecoration.lineThrough
+                                                                      )
+                                                                    )
+                                                                  ] else ...[
+                                                                    Text(
+                                                                      otherVendors[index].price.toStringAsFixed(2) + " TL",
+                                                                      style: const TextStyle(
+                                                                        fontSize: 20,
+                                                                        fontWeight: FontWeight.w900
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          Container(
+                                                            margin: const EdgeInsets.only(top: 10),
+                                                            child: Column(
+                                                              children: [
+                                                                Row(
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: OutlinedButton(
+                                                                        child: Row(
+                                                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                          children: const [
+                                                                            Icon(Icons.question_answer),
+                                                                            Expanded(
+                                                                              child: Text("Satıcıya Sor", maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,)
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        onPressed: () {
+
+                                                                        }
+                                                                      )
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                Row(
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: ElevatedButton(
+                                                                        child: Row(
+                                                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                          children: const [
+                                                                            Icon(Icons.shopping_cart_outlined),
+                                                                            Expanded(
+                                                                              child: Text("Bu Satıcıdan Sepete Ekle", maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,)
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        onPressed: () {
+
+                                                                        }
+                                                                      )
+                                                                    ),
+                                                                  ],
+                                                                )
+                                                              ],
                                                             )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        otherVendors[index].getPriceWithCartDiscount().toStringAsFixed(2) + " TL",
-                                                        style: const TextStyle(
-                                                          fontSize: 20,
-                                                          fontWeight: FontWeight.w900,
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        margin: const EdgeInsets.only(top: 10),
-                                                        child: Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child: OutlinedButton(
-                                                                child: const Text("Bu Satıcıdan Sepete Ekle"),
-                                                                onPressed: () {}
-                                                              )
-                                                            )
-                                                          ],
-                                                        )
+                                                          )
+                                                        ],
                                                       )
-                                                    ],
+                                                    )
                                                   )
                                                 );
                                               }
@@ -378,90 +475,125 @@ class _ProductHomeScreenState extends State<ProductHomeScreen> {
                     );
                   },
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.background,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10)
+                if(productVendor != null) ...[
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.background,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10)
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: const Offset(0, 3), // changes position of shadow
-                        ),
-                      ],
-                    ),
-                    height: 75,
-                    padding: const EdgeInsets.only(right: 20, left: 20, top: 10, bottom: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children:  [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if(productVendor.cartDiscount != 0) ...[
-                              Text(
-                                "Sepette %${productVendor.cartDiscount} indirimli fiyat", 
-                                style: TextStyle(
+                      height: 75,
+                      padding: const EdgeInsets.only(right: 10, left: 10, top: 10, bottom: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children:  [
+                          if (productVendor.discount != 0) ...[
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              margin: const EdgeInsets.only(right: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(5)
+                              ),
+                              child: Text(
+                                "%" + productVendor.discount.toString(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
                                   fontSize: 14,
-                                  color: Theme.of(context).additionalColorScheme.success
-                                ),
-                              ),
-                              Text(
-                                productVendor.getPriceWithCartDiscount().toStringAsFixed(2) + " TL", 
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w900,
-                                  color: Theme.of(context).additionalColorScheme.success
-                                ),
-                              ),
-                              Text(
-                                productVendor.getPriceWithDiscount().toStringAsFixed(2) + " TL", 
-                                style: const TextStyle(
-                                  fontSize: 14, 
-                                  fontWeight: FontWeight.w900,
-                                  decoration: TextDecoration.lineThrough
+                                  color: Colors.white
                                 )
-                              )
-                            ] else ...[
-                              Text(
-                                productVendor.price.toStringAsFixed(2) + " TL",
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w900
+                              ),
+                            )
+                          ],
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if(productVendor.cartDiscount != 0) ...[
+                                Text(
+                                  "Sepette %${productVendor.cartDiscount} indirimli fiyat", 
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Theme.of(context).additionalColorScheme.success
+                                  ),
+                                ),
+                                Text(
+                                  productVendor.getPriceWithCartDiscount().toStringAsFixed(2) + " TL", 
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w900,
+                                    color: Theme.of(context).additionalColorScheme.success
+                                  ),
+                                ),
+                                Text(
+                                  productVendor.getPriceWithDiscount().toStringAsFixed(2) + " TL", 
+                                  style: const TextStyle(
+                                    fontSize: 14, 
+                                    fontWeight: FontWeight.w900,
+                                    decoration: TextDecoration.lineThrough
+                                  )
+                                )
+                              ] else ...[
+                                Text(
+                                  productVendor.price.toStringAsFixed(2) + " TL",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w900
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.favorite_outline),
+                            iconSize: 30,
+                            splashColor: Colors.red,
+                            onPressed: () {},
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top:10, bottom:10), 
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: const [
+                                    Icon(Icons.shopping_cart_outlined),
+                                    Expanded(
+                                      child: Text("Add to Cart", style: TextStyle(fontSize: 16),maxLines: 2,overflow: TextOverflow.ellipsis, textAlign: TextAlign.center)
+                                    )
+                                  ],
                                 ),
                               ),
-                            ],
-                          ],
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.favorite_outline),
-                          iconSize: 30,
-                          onPressed: () {},
-                        ),
-                        ElevatedButton(
-                          child: const Padding(padding: EdgeInsets.all(10), child: Text("Add to Cart", style: TextStyle(fontSize: 20),)),
-                          onPressed: () {},
-                        )
-                      ],
-                    )
+                              onPressed: () {},
+                            )
+                          )
+                        ],
+                      )
+                    ),
                   ),
-                ),
+                ],
                 Align(
                   alignment: Alignment.topLeft,
                   child: Padding(
                     padding: const EdgeInsets.only(left:10, top:10),
                     child: FloatingActionButton(
-                    onPressed: widget.exitProductScreen,
-                    backgroundColor: Theme.of(context).colorScheme.background,
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onBackground),
-                  ),
+                      onPressed: widget.exitProductScreen,
+                      backgroundColor: Theme.of(context).colorScheme.background,
+                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onBackground),
+                    ),
                   )
                 ),
               ],

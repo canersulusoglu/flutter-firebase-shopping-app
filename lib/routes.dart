@@ -8,8 +8,10 @@ import 'Screens/AppScreen.dart' show AppScreen;
 import 'Screens/AccountScreen.dart' show AppAccountScreen;
 import 'Screens/ProductListScreen.dart' show AppProductListScreen;
 import 'Screens/ProductScreen.dart' show AppProductScreen;
+import 'Screens/VendorListScreen.dart' show AppVendorListScreen;
+import 'Screens/VendorScreen.dart' show AppVendorScreen;
 // Args
-import 'Types/Product.dart' show ProductScreenArgs;
+import 'DataTypes/Arguments.dart' show ProductScreenArgs, VendorScreenArgs;
 
 const routeAuthLoginPage = 'login';
 const routeAuthRegisterPage = 'register';
@@ -17,7 +19,8 @@ const routeAppPage = "app";
 const routeAccountPage = "account";
 const routeProductListPage = "product_list";
 const routeProductPage = "product";
-
+const routeVendorListPage = "vendor_list";
+const routeVendorPage = "vendor";
 
 MaterialPageRoute<dynamic> onGenerateRoutes (RouteSettings settings){
   late Widget page;
@@ -49,6 +52,14 @@ MaterialPageRoute<dynamic> onGenerateRoutes (RouteSettings settings){
       final subRoute = routeName.substring(routeProductPage.length);
       final args = settings.arguments as ProductScreenArgs;
       page = AppProductScreen(subRouteName: subRoute, args: args);
+    }
+    else if(routeName == routeVendorListPage){
+      page = const AppVendorListScreen();
+    }
+    else if(routeName.startsWith(routeVendorPage)){
+      final subRoute = routeName.substring(routeVendorPage.length);
+      final args = settings.arguments as VendorScreenArgs;
+      page = AppVendorScreen(subRouteName: subRoute, args: args);
     }
     else{
       page = const AppScreen();
