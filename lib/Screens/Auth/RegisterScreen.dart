@@ -195,7 +195,7 @@ class _RegisterFormState extends State<RegisterForm> {
               keyboardType: TextInputType.phone,
               inputFormatters: [
                 //PhoneInputFormatter(),
-                MaskedInputFormatter('(###) ###-####', anyCharMatcher: RegExp(r"[0-9.]")),
+                MaskedInputFormatter('(###) ###-####', allowedCharMatcher: RegExp(r"[0-9.]")),
               ],
               decoration: const InputDecoration(
                   labelText: "Phone Number", prefixIcon: Icon(Icons.phone)),
